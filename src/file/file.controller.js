@@ -17,7 +17,12 @@ class FileController {
       if (candidate) {
         throw ApiError.badRequest(`Folder "${name}" already exist`)
       }
-      const file = await File.create({ name, type, parent, userId: 1 }) // req.user.id
+      const file = await File.create({
+        name,
+        type,
+        parent,
+        userId: req.user.id,
+      })
       const parentFile = !!parent
         ? await File.findOne({ where: { id: parent }, raw: true })
         : null

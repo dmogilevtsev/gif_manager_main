@@ -30,7 +30,7 @@ const start = async () => {
     if (err) {
       return console.log(`Server down. Error: ${err.message}`)
     }
-    console.log(`Server has been started on ${config.host}${config.port}/ port`)
+    console.log(`Server has been started on ${config.host}${config.port}/`)
   })
 }
 
