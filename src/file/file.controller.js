@@ -95,7 +95,6 @@ class FileController {
       } else {
         filePath = path.join(basePath, `${userId}`, `${file.name}`)
       }
-      console.log('filePath', filePath)
       if (fs.existsSync(filePath)) {
         throw ApiError.badRequest('File already exist')
       }
@@ -104,8 +103,7 @@ class FileController {
       if (parent) {
         newFilePath = path.join(parent.path, file.name)
       }
-      newFilePath
-      await File.create({
+      const newFile = await File.create({
         name: file.name,
         type,
         size: file.size,
@@ -113,7 +111,7 @@ class FileController {
         parent: parent?.id,
         userId,
       })
-      return res.json(file)
+      return res.json(newFile)
     } catch (error) {
       next(error)
     }
@@ -121,19 +119,16 @@ class FileController {
 
   async downLoadFile(req, res, next) {
     try {
+      console.log('download file', { id: req.query.id, userId: req.user.id })
       const file = await File.findOne({
         where: { id: req.query.id, userId: req.user.id },
       })
-      const filePath = path.join(
-        basePath,
-        `${req.user.id}`,
-        `${file.path}`,
-        `${file.name}`
-      )
+      const filePath = path.join(basePath, `${req.user.id}`, `${file.path}`)
+      console.log('filePath', filePath)
       if (fs.existsSync(filePath)) {
         return res.download(filePath, file.name)
       }
-      res.status(400).json({ message: 'File not fount' })
+      return res.status(400).json({ message: 'File not found' })
     } catch (error) {
       next(error)
     }
@@ -144,15 +139,14 @@ class FileController {
       const file = await File.findOne({
         where: { id: req.query.id, userId: req.user.id },
       })
-      console.log('file', file)
       if (!file) {
         res.status(400).json({ message: 'File not fount' })
       }
       fileService.removeFileLocal(file)
-      await File.destroy({ id: file.id })
-      return re.json({ message: 'File was removed' })
+      await File.destroy({ where: { id: file.id } })
+      return res.json({ message: 'File was removed' })
     } catch (error) {
-      next(error)
+      return res.status(500).json({ message: 'Folder is not empty' })
     }
   }
 }
