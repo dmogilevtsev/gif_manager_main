@@ -24,7 +24,7 @@ module.exports = async (req, res, next) => {
 }
 
 async function checkUserData(accessToken) {
-  return await axios.get(`${config.auth_host}/api/refresh`, {
+  return await axios.get(`${config.auth_host}:${config.auth_port}/api/refresh`, {
     withCredentials: true,
     headers: {
       Authorization: `Bearer ${accessToken}`,

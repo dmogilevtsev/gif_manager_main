@@ -34,6 +34,7 @@ API_PORT_MAIN=3002
 # gif_manager_client environment
 API_HOST_CLIENT=http://localhost:
 API_PORT_CLIENT=3000
+AUTH_HOST_MAIN=auth
 ```
 
 2. Create `docker-compose.yml`
@@ -55,6 +56,8 @@ services:
       - ./initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
     ports:
       - ${DB_PORT}:${DB_PORT}
+    networks:
+      - app
   auth:
     container_name: auth
     build:
@@ -69,7 +72,7 @@ services:
     environment:
       # base env
       - API_PORT_NODE_AUTH=${API_PORT_NODE_AUTH}
-      - API_HOST=${API_HOST_NODE_AUTH}
+      - API_HOST_NODE_AUTH=${API_HOST_NODE_AUTH}
       - CLIENT_URL=${CLIENT_URL}
       # db env
       - DB_HOST=${DB_HOST}
@@ -88,6 +91,8 @@ services:
       - SMTP_PASSWORD=${SMTP_PASSWORD}
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_PORT=${SMTP_PORT}
+    networks:
+      - app
   main:
     container_name: gif_manager_main
     build:
@@ -101,9 +106,11 @@ services:
       - ${API_PORT_MAIN}
     environment:
       # base env
-      - API_PORT=${API_PORT_MAIN}
-      - API_HOST=${API_HOST_MAIN}
-      - AUTH_HOST=${API_HOST_NODE_AUTH}${API_PORT_NODE_AUTH}
+      - API_PORT_MAIN=${API_PORT_MAIN}
+      - API_HOST_MAIN=${API_HOST_MAIN}
+      - API_PORT_NODE_AUTH=${API_PORT_NODE_AUTH}
+      - API_HOST_NODE_AUTH=${API_HOST_NODE_AUTH}
+      - AUTH_HOST_MAIN=${AUTH_HOST_MAIN}
       - CLIENT_URL=${CLIENT_URL}
       # db env
       - DB_HOST=${DB_HOST}
@@ -112,6 +119,8 @@ services:
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_TYPE=${DB_TYPE}
+    networks:
+      - app
   client:
     container_name: gif_manager_client
     build:
@@ -121,9 +130,14 @@ services:
     restart: always
     ports:
       - ${API_PORT_CLIENT}:80
+    networks:
+      - app
+networks:
+  app:
+    driver: bridge
 ```
 
-3. Create `inidb.sh` file
+3. Create `initdb.sh` file
 
 ```bash
 #!/bin/bash

@@ -1,6 +1,5 @@
 const fs = require('fs')
 const path = require('path')
-const { Z_FIXED } = require('zlib')
 const { basePath } = require('./utile')
 
 class FileService {
