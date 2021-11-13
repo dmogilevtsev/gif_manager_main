@@ -3,7 +3,6 @@ const fs = require('fs')
 const ApiError = require('../error/ApiError')
 const File = require('./File')
 const fileService = require('./file.service')
-const { basePath } = require('./utile')
 
 class FileController {
   async createDir(req, res, next) {
@@ -86,14 +85,14 @@ class FileController {
       }
       const parent = req.body.parent
         ? await File.findOne({
-            where: { userId, id: req.body.parent },
-          })
+          where: { userId, id: req.body.parent },
+        })
         : null
       let filePath
       if (parent) {
-        filePath = path.join(basePath, `${userId}`, parent.path, file.name)
+        filePath = path.join('files', `${userId}`, parent.path, file.name)
       } else {
-        filePath = path.join(basePath, `${userId}`, `${file.name}`)
+        filePath = path.join('files', `${userId}`, `${file.name}`)
       }
       if (fs.existsSync(filePath)) {
         throw ApiError.badRequest('File already exist')
@@ -101,7 +100,7 @@ class FileController {
       file.mv(filePath)
       let newFilePath = file.name
       if (parent) {
-        newFilePath = path.join(parent.path, file.name)
+        newFilePath = path.join('files', parent.path, file.name)
       }
       const newFile = await File.create({
         name: file.name,
@@ -117,30 +116,13 @@ class FileController {
     }
   }
 
-  async downLoadFile(req, res, next) {
-    try {
-      console.log('download file', { id: req.query.id, userId: req.user.id })
-      const file = await File.findOne({
-        where: { id: req.query.id, userId: req.user.id },
-      })
-      const filePath = path.join(basePath, `${req.user.id}`, `${file.path}`)
-      console.log('filePath', filePath)
-      if (fs.existsSync(filePath)) {
-        return res.download(filePath, file.name)
-      }
-      return res.status(400).json({ message: 'File not found' })
-    } catch (error) {
-      next(error)
-    }
-  }
-
   async removeFile(req, res, next) {
     try {
       const file = await File.findOne({
         where: { id: req.query.id, userId: req.user.id },
       })
       if (!file) {
-        res.status(400).json({ message: 'File not fount' })
+        res.status(400).json({ message: 'File not found' })
       }
       fileService.removeFileLocal(file)
       await File.destroy({ where: { id: file.id } })

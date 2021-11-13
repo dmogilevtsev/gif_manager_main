@@ -1,10 +1,9 @@
 const fs = require('fs')
 const path = require('path')
-const { basePath } = require('./utile')
 
 class FileService {
   createDir(file) {
-    const filesPath = path.join(basePath, `${file.userId}`, file.path)
+    const filesPath = path.join('files', `${file.userId}`, file.path)
     return new Promise((resolve, reject) => {
       try {
         if (!fs.existsSync(filesPath)) {
@@ -20,7 +19,7 @@ class FileService {
   }
 
   removeFileLocal(file) {
-    const filePath = path.join(basePath, `${file.userId}`, `${file.path}`)
+    const filePath = path.join('files', `${file.userId}`, `${file.path.replace('files/', '')}`)
     if (file.type === 'dir') {
       fs.rmdirSync(filePath)
     } else {
