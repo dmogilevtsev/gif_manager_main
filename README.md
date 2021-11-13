@@ -1,6 +1,6 @@
 # GIF MANAGER APP
 
-1. First step - create folder with project and add `.anv` file with variables:
+1. First step - create folder with project and add `.env` file with variables:
 
 ```bash
 # DB env
@@ -18,14 +18,14 @@ API_HOST_NODE_AUTH=http://localhost:
 CLIENT_URL=http://localhost:3000
 # JWT environment
 JWT_ACCESS_SECRET=ce996c86-9b22-42cb-be91-b4a50c3fb02a
-JWT_ACCESS_EXPIRESIN=5m
+JWT_ACCESS_EXPIRESIN=1m
 JWT_REFRESH_SECRET=af0dd4e5-03e1-4028-9170-a2e8ef09a995
 JWT_REFRESH_EXPIRESIN=30d
 # SMTP environment
-SMTP_USER=gifmanager07@gmail.com
-SMTP_PASSWORD=MKRwrwM3fwsW5RQ
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
+SMTP_USER=###
+SMTP_PASSWORD=###
+SMTP_HOST=###
+SMTP_PORT=###
 
 # gif_manager_main environment
 API_HOST_MAIN=http://localhost:
@@ -115,10 +115,12 @@ services:
       # db env
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
-      - DB_DATABASENAME_AUTH=${DB_DATABASENAME_AUTH}
+      - DB_DATABASENAME_MAIN=${DB_DATABASENAME_MAIN}
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_TYPE=${DB_TYPE}
+    volumes:
+      - ./files:/usr/files
     networks:
       - app
   client:
@@ -132,6 +134,8 @@ services:
       - ${API_PORT_CLIENT}:80
     networks:
       - app
+    volumes:
+      - ./files:/usr/share/nginx/html/files
 networks:
   app:
     driver: bridge
