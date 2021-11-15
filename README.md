@@ -186,3 +186,12 @@ APP will start on [http://localhost:3000/](http://localhost:3000/)
 
 To register, click "Sign up" and write your current email address and come up with a password. An email with an
 activation link will be sent to your mail.
+
+To add test user run command
+```bash
+docker exec auth sh -c "npx sequelize-cli db:seed:all"
+```
+### test user:
+
+email: `test@test.ru`<br>
+password: `password`
