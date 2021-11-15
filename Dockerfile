@@ -1,17 +1,17 @@
-FROM node:16-alpine as builder
+ARG NODE_VERSION=16-alpine
+FROM node:$NODE_VERSION as builder
 WORKDIR /usr
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN ls -la
-CMD node src/index.js
+RUN npm run build
 
 # stage 2
-# FROM node:16-alpine
-# WORKDIR /usr
-# COPY package*.json ./
-# RUN npm install --production
+FROM node:$NODE_VERSION
+WORKDIR /usr
+COPY package*.json ./
+RUN npm install --production
 
-# COPY --from=builder /usr/dist ./dist
+COPY --from=builder /usr/dist ./dist
 
-# CMD node dist/index.js
+CMD node dist/index.js

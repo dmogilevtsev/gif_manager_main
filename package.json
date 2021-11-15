@@ -22,7 +22,8 @@
   },
   "devDependencies": {
     "babel-preset-minify": "^0.5.1",
-    "nodemon": "^2.0.14"
+    "nodemon": "^2.0.14",
+    "sequelize-cli": "^6.3.0"
   },
   "babel": {
     "presets": [
